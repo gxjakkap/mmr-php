@@ -17,4 +17,5 @@ jobs:
         env:
           COOLIFY_WEBHOOK: ${{ secrets.COOLIFY_WEBHOOK }}
           COOLIFY_TOKEN: ${{ secrets.COOLIFY_TOKEN }}
-        run: curl -fsS --retry 3 "$COOLIFY_WEBHOOK" -H "Authorization: Bearer $COOLIFY_TOKEN"
+        run: |
+          curl -fsS --retry 3 "$COOLIFY_WEBHOOK" -H "Authorization: Bearer $COOLIFY_TOKEN"
