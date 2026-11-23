@@ -1,0 +1,9 @@
+.env
+.git
+.claude
+storage/*/*
+!storage/*/.gitkeep
+tests
+docs
+Dockerfile
+.dockerignore

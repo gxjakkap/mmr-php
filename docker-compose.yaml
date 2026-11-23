@@ -1,0 +1,63 @@
+services:
+  app:
+    build: .
+    # Migrations are idempotent; runs on every deploy before Apache starts.
+    command: sh -c "php bin/migrate.php && exec apache2-foreground"
+    environment:
+      APP_URL: ${APP_URL:?set to the public https URL}
+      APP_DEBUG: "false"
+      APP_TIMEZONE: ${APP_TIMEZONE:-Asia/Bangkok}
+      DB_HOST: db
+      DB_PORT: "3306"
+      DB_NAME: ${DB_NAME:-memorii}
+      DB_USER: ${DB_USER:-memorii}
+      DB_PASS: ${DB_PASS:?}
+      # cloudflared terminates TLS, so PHP never sees HTTPS itself
+      SESSION_SECURE: "true"
+      SESSION_IDLE_SECONDS: ${SESSION_IDLE_SECONDS:-28800}
+      # log = emails only go to storage/logs/mail.log; use smtp for real users
+      MAIL_DRIVER: ${MAIL_DRIVER:-log}
+      MAIL_FROM: ${MAIL_FROM:-no-reply@example.com}
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASS: ${SMTP_PASS:-}
+      OPERATOR_NAME: ${OPERATOR_NAME:-}
+      CONTACT_EMAIL: ${CONTACT_EMAIL:-}
+      CONTACT_LINE: ${CONTACT_LINE:-}
+      CONTACT_PHONE: ${CONTACT_PHONE:-}
+    volumes:
+      - uploads:/var/www/html/storage/uploads
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  db:
+    image: mariadb:11.4
+    environment:
+      MARIADB_DATABASE: ${DB_NAME:-memorii}
+      MARIADB_USER: ${DB_USER:-memorii}
+      MARIADB_PASSWORD: ${DB_PASS:?}
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASS:?}
+    volumes:
+      - db-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    command: tunnel --no-autoupdate run
+    environment:
+      TUNNEL_TOKEN: ${CLOUDFLARE_TUNNEL_TOKEN:?}
+    depends_on:
+      - app
+    restart: unless-stopped
+
+volumes:
+  uploads:
+  db-data:

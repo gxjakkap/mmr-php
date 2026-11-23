@@ -1,0 +1,5 @@
+# If the host cannot point the document root at /public, block direct access to everything else.
+RewriteEngine On
+RewriteRule ^(app|database|storage|tests|bin|docs)(/|$) - [F,L]
+RewriteRule ^\.env - [F,L]
+RewriteRule ^(.*)$ public/$1 [L]

@@ -1,0 +1,12 @@
+<?php use App\Core\View; View::$title = 'Swap'; ?>
+<?= photo_banner('Swap', L('แลกเสื้อผ้ากับสมาชิกคนอื่น ได้ลุคใหม่โดยไม่ต้องซื้อใหม่ — ทั้งสองฝ่ายต้องยืนยันก่อนส่งของ', 'Trade clothes with other members — both sides confirm before shipping'), 'denim',
+  '<a class="btn btn-gold mt-m" href="/wardrobe">' . ic('swap') . ' ' . e(L('ลงแลกจากตู้ของฉัน', 'List from my wardrobe')) . '</a>') ?>
+<div class="how3"><?php foreach ([['swap', L('ลงเสื้อผ้าที่อยากแลก (ทีมงานตรวจก่อน)', 'List a piece (reviewed by our team)')], ['chat', L('รับข้อเสนอและเลือก 1 รายการ', 'Choose one offer')], ['truck', L('ยืนยันทั้งสองฝ่ายแล้วส่งของ', 'Both confirm, then ship')]] as $n => [$i, $tx]): ?>
+  <div><span class="stepn"><?= $n + 1 ?></span><?= ic($i) ?><p class="small"><?= e($tx) ?></p></div><?php endforeach; ?></div>
+<?php if ($mine): ?><section class="sec"><?= section_head(L('ประกาศแลกของฉัน', 'My swap listings')) ?><div class="olist">
+  <?php foreach ($mine as $l): ?><a class="ocard" href="/swap/<?= e($l['id']) ?>"><?= photo($l['cover_image_id'], $l['category'], 'mini') ?><div class="grow"><strong><?= e($l['title']) ?></strong><p class="xs muted"><?= e(L('อยากได้', 'Looking for')) ?>: <?= e($l['looking_for'] ?: '—') ?></p></div><span class="badge"><?= e(listing_status_label($l['status'])) ?></span></a><?php endforeach; ?></div></section><?php endif; ?>
+<section class="sec"><?= section_head(L('พร้อมแลก', 'Available to swap') . ' (' . count($rows) . ')') ?>
+<?php if ($rows): ?><div class="mgrid"><?php foreach ($rows as $l): ?><div class="mcard"><a href="/swap/<?= e($l['id']) ?>"><?= photo($l['cover_image_id'], $l['category'], 'tall', $l['title']) ?></a>
+  <a class="mc-b" href="/swap/<?= e($l['id']) ?>"><strong><?= e($l['title']) ?></strong><span class="xs muted"><?= e(L('อยากได้', 'Looking for')) ?>: <?= e($l['looking_for'] ?: '—') ?></span></a></div><?php endforeach; ?></div>
+<?php else: ?><div class="empty"><img class="empty-img" src="<?= e(img('shirt')) ?>" alt=""><p class="title"><?= e(L('ยังไม่มีรายการแลก', 'Nothing to swap yet')) ?></p><a class="btn btn-gold mt-l" href="/wardrobe"><?= ic('swap') ?> <?= e(L('ลงแลก', 'List a piece')) ?></a></div><?php endif; ?></section>
+<p class="alert xs mt-l"><?= e(L('การแลกอาจมีค่าจัดส่ง แต่ละฝ่ายรับผิดชอบค่าส่งของตนเอง MEMORii ไม่ได้รับประกันสินค้าที่แลกระหว่างสมาชิก หากมีปัญหาแจ้งทีมงานผ่านหน้าติดต่อเรา', 'Swaps may involve shipping; each side pays to send their item. MEMORii does not guarantee items swapped between members — report problems via the contact page.')) ?></p>
